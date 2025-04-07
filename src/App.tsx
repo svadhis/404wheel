@@ -33,9 +33,9 @@ const App = () => {
     console.log(winner)
   }
   return (
-    <div className="bg-white h-screen w-screen overflow-hidden flex flex-row justify-between items-center py-8 px-16 ">
+    <div className="bg-white h-screen w-screen overflow-hidden flex flex-row space-x-12 justify-between items-center py-8 px-16 ">
       <Advert />
-      <img src={qr} alt="" className="w-32 self-end" />
+      {/* <img src={qr} alt="" className="w-32 self-end" /> */}
       <WheelComponent
         segments={segments}
         segColors={segColors}

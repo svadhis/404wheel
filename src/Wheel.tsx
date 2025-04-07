@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import sticker from './assets/sticker2.png'
+import sticker from './assets/stickerqr.png'
 
 export interface WheelComponentProps {
   segments: string[]
