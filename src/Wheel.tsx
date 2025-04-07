@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import sticker from './assets/stickerqr.png'
+import { GameStatus } from './App'
 
 export interface WheelComponentProps {
   segments: string[]
@@ -16,7 +17,7 @@ export interface WheelComponentProps {
   fontFamily?: string
   fontSize?: string
   outlineWidth?: number,
-  status?: 'idle' | 'ready' | 'registering',
+  status?: GameStatus,
   onRegister: () => void
 }
 
@@ -31,7 +32,7 @@ const WheelComponent = ({
   upDuration = 100,
   downDuration = 1000,
   fontFamily = 'proxima-nova',
-  fontSize = '3em',
+  fontSize = '4em',
   status = 'idle',
   onRegister,
 }: WheelComponentProps) => {
@@ -216,7 +217,7 @@ const WheelComponent = ({
     } else if (status === 'registering') {
       return {
         opacity: 0.5,
-        transform: 'translateX(200px)',
+        transform: 'translateX(400px)',
         pointerEvents: 'none',
       }
     }
