@@ -19,7 +19,19 @@ const Advert = ({ status = 'idle', onParticipate }: { status?: GameStatus, onPar
     } else if (status === 'registering') {
       return {
         opacity: 0.5,
-        transform: 'translateX(-400px)',
+        // transform: 'translateX(-100px)',
+        pointerEvents: 'none',
+      }
+    } else if (status === 'playing') {
+      return {
+        opacity: 1,
+        transform: 'none',
+        pointerEvents: 'none',
+      }
+    } else if (status === 'result') {
+      return {
+        opacity: 0.5,
+        transform: 'none',
         pointerEvents: 'none',
       }
     }
@@ -29,7 +41,7 @@ const Advert = ({ status = 'idle', onParticipate }: { status?: GameStatus, onPar
     <div
       className="poppins-bold text-g404-bleu text-center text-2xl font-bold flex flex-col items-center space-y-16 w-164"
       style={{
-        transition: 'all 0.5s ease-in-out',
+        transition: 'all 0.3s ease-in-out',
         ...advertStatus() as React.CSSProperties,
       }}
     >
@@ -52,15 +64,25 @@ const Advert = ({ status = 'idle', onParticipate }: { status?: GameStatus, onPar
       <div className="text-g404-bleu text-4xl flex flex-col space-y-2">
         <span>Obtiens ta réduction</span>
         <span className="text-g404-violet poppins-black text-5xl">exclusive</span>
-        <span>pour un ateliers enfant</span>
+        <span>pour un atelier enfant</span>
         <span>autour du numérique !</span>
       </div>
-      <div
-        className="participate bg-g404-violet text-white text-3xl w-42 h-42 flex justify-center items-center rounded-full"
-        onClick={onParticipate}
-      >
-        JOUER
-      </div>
+      { status === 'ready' || status === "playing" || status === "result" ? (
+        <div className="text-g404-bleu text-4xl">
+          <span className="text-g404-violet poppins-black text-6xl">Bonne chance !</span>
+        </div>
+      ) : (
+        <div
+          className="participate cursor-pointer bg-g404-violet text-white text-3xl w-42 h-42 flex justify-center items-center rounded-full"
+          onClick={status === 'idle' ? onParticipate : undefined}
+        >
+          JOUER
+        </div>
+      )}
+
+      {/* <div className="arrow">
+        <img src={arrow} alt="" />
+      </div> */}
       <div></div>
     </div>
   )

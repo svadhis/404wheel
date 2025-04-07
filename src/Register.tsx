@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { GameStatus } from "./App"
 
 export type RegisterData = {
@@ -7,25 +7,43 @@ export type RegisterData = {
   age: '7-' | '8-11' | '12-15' | '16+'
 }
 
-const Register = ({ status = 'idle' }: { status?: GameStatus }) => {
+const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: (participation: RegisterData) => void }) => {
   const [form, setForm] = useState<RegisterData>({
     name: '',
     email: '',
     age: '7-'
   })
 
+  const [error, setError] = useState<string>('')
+
   const [isFormValid, setIsFormValid] = useState(false)
 
-  // function save to save the form data in local storage
   function save() {
-    localStorage.setItem('form', JSON.stringify(form))
-    setIsFormValid(true)
+    if (!form.name || !form.email) {
+      setIsFormValid(false)
+      setError('Veuillez remplir tous les champs')
+      return
+    }
+    setError('')
+    onReady(form)
   }
 
+  useEffect(() => {
+    if (status === 'idle') {
+      setForm({
+        name: '',
+        email: '',
+        age: '7-'
+      })
+      setIsFormValid(false)
+    }
+  }, [status])
+
   return (
-    <div className={`${status === 'idle' && 'hidden'} flex flex-col items-center justify-center text-xl space-y-4 p-24 bg-white text-g404-bleu border`}>
+    <div className={`${status === 'registering' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-all ease-in-out shadow-2xl flex flex-col items-center justify-center text-xl space-y-4 p-24 bg-white text-g404-bleu border`}>
       <span className="text-3xl font-bold poppins-regular">Informations</span>
       <div></div>
+      {error && <p className="text-red-500">{error}</p>}
       <form autoComplete="off" className="flex flex-col space-y-4">
         <label className="text-xl text-gray-600 ml-2">Votre nom et prénom</label>
         <input

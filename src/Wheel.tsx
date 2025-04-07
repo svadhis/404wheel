@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from 'react'
 import sticker from './assets/stickerqr.png'
 import { GameStatus } from './App'
+import { motion } from "motion/react"
+
 
 export interface WheelComponentProps {
   segments: string[]
@@ -18,7 +20,8 @@ export interface WheelComponentProps {
   fontSize?: string
   outlineWidth?: number,
   status?: GameStatus,
-  onRegister: () => void
+  onParticipate: () => void,
+  onStart: () => void,
 }
 
 const WheelComponent = ({
@@ -34,7 +37,8 @@ const WheelComponent = ({
   fontFamily = 'proxima-nova',
   fontSize = '4em',
   status = 'idle',
-  onRegister,
+  onParticipate,
+  onStart,
 }: WheelComponentProps) => {
   const wheelId = useRef(`wheel-${Math.random().toString(36).substring(2)}`)
   const baseCanvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -67,11 +71,12 @@ const WheelComponent = ({
       spinStart.current = Date.now()
       frames.current = 0
       timerHandle.current = window.setInterval(onTimerTick, segments.length)
+      onStart()
     }
   }
 
   const register = () => {
-    onRegister()
+    onParticipate()
   }
 
   const onTimerTick = () => {
@@ -98,11 +103,17 @@ const WheelComponent = ({
         setFinished(true)
         clearInterval(timerHandle.current)
         timerHandle.current = 0
-        onFinished(currentSegment)
       }
       return newAngle
     })
   }
+
+  useEffect(() => {
+    if (isFinished) {
+      onFinished(currentSegment)
+      setFinished(false)
+    }
+  }, [isFinished])
 
   const drawWheel = (angle = angleCurrent) => {
     const canvas = baseCanvasRef.current
@@ -150,7 +161,7 @@ const WheelComponent = ({
     ctx.rotate((start + end) / 2)
     ctx.fillStyle = contrastColor
     ctx.font = `bold ${fontSize} ${fontFamily}`
-    ctx.fillText(segments[index].substring(0, 21), size / 2 + 20, 0)
+    ctx.fillText('       - ' + segments[index].substring(0, 21) + ' %', size / 2 + 20, 0)
     ctx.restore()
   }
 
@@ -217,37 +228,59 @@ const WheelComponent = ({
     } else if (status === 'registering') {
       return {
         opacity: 0.5,
-        transform: 'translateX(400px)',
+        // transform: 'translateX(100px)',
+        pointerEvents: 'none',
+      }
+    } else if (status === 'playing') {
+      return {
+        opacity: 1,
+        transform: 'none',
+        pointerEvents: 'none',
+      }
+    } else if (status === 'result') {
+      return {
+        opacity: 0.5,
+        transform: 'none',
         pointerEvents: 'none',
       }
     }
   }
 
   return (
-    <div
-      id={wheelId.current}
-      style={{
-        position: 'relative',
-        width: dimension,
-        height: dimension,
-        transition: 'all 0.5s ease-in-out',
-        ...wheelStatus() as React.CSSProperties,
+    <motion.div
+      animate={status === 'ready' ? { scale: [1, 1.05, 1] } : { scale: 1}}
+      transition={{
+        duration: 2,
+        repeat: status === 'ready' ? Infinity : 0,
+        ease: "easeInOut"
       }}
-      onClick={() => !isFinished || !isOnlyOnce ? status === 'idle' ? register() : spin() : null}
     >
-      <canvas
-        ref={baseCanvasRef}
-        width={dimension}
-        height={dimension}
-        style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }}
-      />
-      <canvas
-        ref={stickerCanvasRef}
-        width={dimension}
-        height={dimension}
-        style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}
-      />
-    </div>
+      <div
+        id={wheelId.current}
+        style={{
+          position: 'relative',
+          width: dimension,
+          height: dimension,
+          transition: 'all 0.3s ease-in-out',
+          cursor: 'pointer',
+          ...wheelStatus() as React.CSSProperties,
+        }}
+        onClick={() => !isFinished || !isOnlyOnce ? status === 'idle' ? register() : spin() : null}
+      >
+        <canvas
+          ref={baseCanvasRef}
+          width={dimension}
+          height={dimension}
+          style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }}
+        />
+        <canvas
+          ref={stickerCanvasRef}
+          width={dimension}
+          height={dimension}
+          style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}
+        />
+      </div>
+    </motion.div>
   )
 }
 
