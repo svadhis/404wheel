@@ -24,6 +24,8 @@ export interface WheelComponentProps {
   onStart: () => void,
 }
 
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+
 const WheelComponent = ({
   segments,
   segColors,
@@ -65,15 +67,66 @@ const WheelComponent = ({
     drawSticker()
   }, [])
 
+  const targetAngleRef = useRef(0)
+  const animationFrameRef = useRef<number | null>(null)
+
   const spin = () => {
-    if (timerHandle.current === 0) {
-      isStarted.current = true
-      spinStart.current = Date.now()
-      frames.current = 0
-      timerHandle.current = window.setInterval(onTimerTick, segments.length)
-      onStart()
+    if (isStarted.current) return
+
+    function getRandomDigit(): number {
+      const rand = Math.random();
+
+      if (rand < 0.70) {
+        const evens = [0, 2, 4, 6, 8];
+        return evens[Math.floor(Math.random() * evens.length)];
+      } else if (rand < 0.98) {
+        const odds = [1, 3, 5, 7];
+        return odds[Math.floor(Math.random() * odds.length)];
+      } else {
+        return 9;
+      }
     }
+
+    const targetIndex = getRandomDigit()
+
+    console.log('targetIndex', targetIndex)
+
+    isStarted.current = true
+    onStart()
+
+    const spins = 10 // nombre de tours complets avant d’arriver
+    const segmentAngle = PI2 / segments.length
+    const needleOffset = Math.PI / 2
+    const stopAngle = PI2 - (targetIndex * segmentAngle) - needleOffset - segmentAngle / 2
+
+    const finalAngle = spins * PI2 + stopAngle
+    const duration = 4000 // durée en ms
+
+    const startAngle = angleCurrent
+    const startTime = performance.now()
+
+    const animate = (now: number) => {
+      const elapsed = now - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = easeOutCubic(progress)
+
+      const newAngle = startAngle + (finalAngle - startAngle) * eased
+      setAngleCurrent(newAngle % PI2)
+      drawWheel(newAngle % PI2)
+
+      if (progress < 1) {
+        animationFrameRef.current = requestAnimationFrame(animate)
+      } else {
+        cancelAnimationFrame(animationFrameRef.current!)
+        animationFrameRef.current = null
+        setFinished(true)
+        isStarted.current = false
+      }
+    }
+
+    requestAnimationFrame(animate)
   }
+
 
   const register = () => {
     onParticipate()
@@ -83,6 +136,7 @@ const WheelComponent = ({
     frames.current++
     const now = Date.now()
     const elapsed = now - spinStart.current
+    console.log(elapsed)
     let angleDelta = 0
     let finished = false
 
@@ -176,7 +230,7 @@ const WheelComponent = ({
     ctx.closePath()
     ctx.fill()
 
-    const change = angle + Math.PI / 2
+    const change = (angle + Math.PI / 2) % PI2
     let i = segments.length - Math.floor((change / PI2) * segments.length) - 1
     if (i < 0) i += segments.length
     setCurrentSegment(segments[i])

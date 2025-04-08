@@ -92,7 +92,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="bg-white h-screen w-screen overflow-hidden flex flex-row space-x-12 justify-between items-center py-8 px-24 relative">
+    <div className="bg-white h-screen w-screen overflow-hidden flex flex-row space-x-12 justify-between items-center py-8 px-24 relative select-none">
       <div className={status === 'registering' || status === 'result' ? 'blur-md' : ''}>
         <Advert status={status} onParticipate={participate} />
       </div>
