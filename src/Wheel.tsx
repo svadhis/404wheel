@@ -250,7 +250,7 @@ const WheelComponent = ({
     if (!ctx) return
 
     const img = new Image()
-    img.src = '/assets/stickerqr.png'
+    img.src = `${import.meta.env.BASE_URL}assets/stickerqr.png`
     img.onload = () => {
       const imgSize = 300
       ctx.clearRect(0, 0, dimension, dimension)
