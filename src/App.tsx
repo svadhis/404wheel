@@ -10,7 +10,8 @@ import Result from './Result';
 // import qr from './assets/qr.png'
 
 type Participation = RegisterData & {
-  result?: string
+  result?: string,
+  date?: string,
 }
 
 export type GameStatus = 'idle' | 'ready' | 'registering' | 'playing' | 'result'
@@ -60,7 +61,7 @@ const App = () => {
   ]
 
   const onFinished = (winner: string) => {
-    const form = { ...participation!, result: winner }
+    const form = { ...participation!, result: winner, date: new Date().toLocaleString() }
     setParticipation(form)
     setResult(parseInt(winner))
     setStatus('result')
@@ -91,6 +92,25 @@ const App = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // define a custom handler function
+    // for the contextmenu event
+    const handleContextMenu = (e: MouseEvent) => {
+      // prevent the right-click menu from appearing
+      e.preventDefault()
+    }
+
+    // attach the event listener to
+    // the document object
+    document.addEventListener("contextmenu", handleContextMenu)
+
+    // clean up the event listener when
+    // the component unmounts
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu)
+    }
+  }, [])
+
   return (
     <div className="bg-white h-screen w-screen overflow-hidden flex flex-row space-x-12 justify-between items-center py-8 px-24 relative select-none">
       <div className={status === 'registering' || status === 'result' ? 'blur-md' : ''}>
@@ -109,8 +129,8 @@ const App = () => {
           buttonText='Spin'
           isOnlyOnce={false}
           // size={400}
-          upDuration={100}
-          downDuration={500}
+          // upDuration={100}
+          // downDuration={500}
           fontFamily='Arial'
           onParticipate={participate}
           onStart={start}

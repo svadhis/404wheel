@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import sticker from './assets/stickerqr.png'
+// import sticker from './assets/stickerqr.png'
 import { GameStatus } from './App'
 import { motion } from "motion/react"
 
@@ -14,8 +14,8 @@ export interface WheelComponentProps {
   buttonText?: string
   isOnlyOnce?: boolean
   size?: number
-  upDuration?: number
-  downDuration?: number
+  // upDuration?: number
+  // downDuration?: number
   fontFamily?: string
   fontSize?: string
   outlineWidth?: number,
@@ -34,8 +34,8 @@ const WheelComponent = ({
   contrastColor = '#f3f5f8',
   isOnlyOnce = true,
   size = window.innerHeight / 2 - 40,
-  upDuration = 100,
-  downDuration = 1000,
+  // upDuration = 100,
+  // downDuration = 1000,
   fontFamily = 'proxima-nova',
   fontSize = '4em',
   status = 'idle',
@@ -53,13 +53,13 @@ const WheelComponent = ({
   const [angleCurrent, setAngleCurrent] = useState(0)
   const [currentSegment, setCurrentSegment] = useState('')
   const isStarted = useRef(false)
-  const timerHandle = useRef(0)
-  const spinStart = useRef(0)
-  const frames = useRef(0)
+  // const timerHandle = useRef(0)
+  // const spinStart = useRef(0)
+  // const frames = useRef(0)
 
-  const upTime = segments.length * upDuration
-  const downTime = segments.length * downDuration
-  const maxSpeed = Math.PI / segments.length
+  // const upTime = segments.length * upDuration
+  // const downTime = segments.length * downDuration
+  // const maxSpeed = Math.PI / segments.length
   const PI2 = Math.PI * 2
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const WheelComponent = ({
     drawSticker()
   }, [])
 
-  const targetAngleRef = useRef(0)
+  // const targetAngleRef = useRef(0)
   const animationFrameRef = useRef<number | null>(null)
 
   const spin = () => {
@@ -132,35 +132,35 @@ const WheelComponent = ({
     onParticipate()
   }
 
-  const onTimerTick = () => {
-    frames.current++
-    const now = Date.now()
-    const elapsed = now - spinStart.current
-    console.log(elapsed)
-    let angleDelta = 0
-    let finished = false
+  // const onTimerTick = () => {
+  //   frames.current++
+  //   const now = Date.now()
+  //   const elapsed = now - spinStart.current
+  //   console.log(elapsed)
+  //   let angleDelta = 0
+  //   let finished = false
 
-    if (elapsed < upTime) {
-      const progress = elapsed / upTime
-      angleDelta = maxSpeed * Math.sin((progress * Math.PI) / 2)
-    } else if (elapsed < upTime + downTime) {
-      const progress = (elapsed - upTime) / downTime
-      angleDelta = maxSpeed * Math.cos((progress * Math.PI) / 2)
-    } else {
-      finished = true
-    }
+  //   if (elapsed < upTime) {
+  //     const progress = elapsed / upTime
+  //     angleDelta = maxSpeed * Math.sin((progress * Math.PI) / 2)
+  //   } else if (elapsed < upTime + downTime) {
+  //     const progress = (elapsed - upTime) / downTime
+  //     angleDelta = maxSpeed * Math.cos((progress * Math.PI) / 2)
+  //   } else {
+  //     finished = true
+  //   }
 
-    setAngleCurrent(prev => {
-      const newAngle = (prev + angleDelta) % PI2
-      drawWheel(newAngle)
-      if (finished) {
-        setFinished(true)
-        clearInterval(timerHandle.current)
-        timerHandle.current = 0
-      }
-      return newAngle
-    })
-  }
+  //   setAngleCurrent(prev => {
+  //     const newAngle = (prev + angleDelta) % PI2
+  //     drawWheel(newAngle)
+  //     if (finished) {
+  //       setFinished(true)
+  //       clearInterval(timerHandle.current)
+  //       timerHandle.current = 0
+  //     }
+  //     return newAngle
+  //   })
+  // }
 
   useEffect(() => {
     if (isFinished) {
@@ -250,7 +250,7 @@ const WheelComponent = ({
     if (!ctx) return
 
     const img = new Image()
-    img.src = sticker
+    img.src = '/assets/stickerqr.png'
     img.onload = () => {
       const imgSize = 300
       ctx.clearRect(0, 0, dimension, dimension)
