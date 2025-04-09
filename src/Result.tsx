@@ -1,6 +1,6 @@
 import { GameStatus } from "./App"
 
-const Result = ({ status = 'idle', discount, reset }: { status?: GameStatus, discount: number, reset: () => void }) => {
+const Result = ({ status = 'idle', discount }: { status?: GameStatus, discount: number }) => {
   return (
     <div className={`${status === 'result' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-all ease-in-out shadow-2xl flex flex-col items-center justify-center text-xl space-y-4 p-16 bg-white text-g404-bleu border`}>
       <div className="text-g404-bleu text-4xl">

@@ -175,7 +175,7 @@ const App = () => {
         <Register status={status} onReady={getReady} />
       </div>
       <div className="flex flex-col space-y-24 items-center pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-        <Result key={result} status={status} discount={result} reset={reset} />
+        <Result key={result} status={status} discount={result} />
         <div onClick={reset} className={`${status === 'result' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} bg-g404-violet w-48 text-white rounded-xl text-center p-4 poppins-bold`}>
           RETOUR
         </div>
