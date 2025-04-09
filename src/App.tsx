@@ -60,6 +60,16 @@ const App = () => {
     '#d3af37',
   ]
 
+  function copyData() {
+    const participants = JSON.parse(localStorage.getItem('participations') || '[]') as Participation[]
+    const text = participants.map((p: Participation) => `${p.name} (${p.email}) - ${p.result} - ${p.date}`).join('\n')
+    navigator.clipboard.writeText(text).then(() => {
+      console.log('Copied to clipboard')
+    }, (err) => {
+      console.error('Could not copy text: ', err)
+    })
+  }
+
   const onFinished = (winner: string) => {
     const form = { ...participation!, result: winner, date: new Date().toLocaleString() }
     setParticipation(form)
@@ -78,9 +88,22 @@ const App = () => {
   }
 
   useEffect(() => {
+    if (status === 'result') {
+      const timer = setTimeout(() => {
+        reset()
+      }, 10000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [status])
+
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         reset();
+      }
+      if (event.key === "F2") {
+        copyData();
       }
     };
 
@@ -153,6 +176,9 @@ const App = () => {
       </div>
       <div className="pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
         <Result key={result} status={status} discount={result} />
+      </div>
+      // button in absolute position to reset the game
+      <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" onClick={reset}>
       </div>
     </div>
   )

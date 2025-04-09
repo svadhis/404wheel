@@ -1,19 +1,21 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { GameStatus } from "./App"
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
+
+
 export type RegisterData = {
   name: string
   email: string
-  age: '7-' | '8-11' | '12-15' | '16+'
+  age: '6-10' | '10-16' | '16-18' | 'autres'
 }
 
 const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: (participation: RegisterData) => void }) => {
   const [form, setForm] = useState<RegisterData>({
     name: '',
     email: '',
-    age: '7-'
+    age: '6-10'
   })
 
   const [error, setError] = useState<string>('')
@@ -23,6 +25,12 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
   const [layoutName, setLayoutName] = useState('default')
 
   const [capsLock, setCapsLock] = useState(false)
+
+  const [isAccepted, setIsAccepted] = useState(false)
+
+  const checkboxRef = useRef<HTMLInputElement>(null)
+
+  const [isFormValid, setIsFormValid] = useState(false)
 
   // const onChange = (input: string) => {
   //   console.log("Input changed", input);
@@ -68,11 +76,22 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
     setLayoutName(layout === "default" ? "shift" : "default");
   };
 
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/
+    return emailRegex.test(email)
+  }
+
   function save() {
     if (!form.name || !form.email) {
       setError('Veuillez remplir tous les champs')
       return
     }
+
+    if (!isValidEmail(form.email)) {
+      setError('Veuillez entrer un email valide')
+      return
+    }
+
     setError('')
     setSelectedInput('')
     onReady(form)
@@ -83,14 +102,22 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
       setForm({
         name: '',
         email: '',
-        age: '7-'
+        age: '6-10'
       })
     }
   }, [status])
 
+  useEffect(() => {
+    if (form.name && isValidEmail(form.email) && isAccepted) {
+      setIsFormValid(true)
+    } else {
+      setIsFormValid(false)
+    }
+  }, [form, isAccepted])
+
   return (
     <div className={`${status === 'registering' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-all w-256 ease-in-out shadow-2xl flex flex-col items-center justify-center text-xl space-y-4 p-16 bg-white text-g404-bleu border`}>
-      <span className="text-3xl font-bold poppins-regular">Informations</span>
+      <span className="text-3xl poppins-bold">INFORMATIONS</span>
       <div></div>
       {error && <p className="text-red-500">{error}</p>}
       <form autoComplete="off" className="flex flex-col space-y-4">
@@ -119,21 +146,39 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         <label className="text-xl text-gray-600 ml-2">L'âge de votre enfant</label>
         <select
           value={form.age}
-          onChange={(e) => setForm({ ...form, age: e.target.value as '7-' | '8-11' | '12-15' | '16+' })}
+          onChange={(e) => setForm({ ...form, age: e.target.value as '6-10' | '10-16' | '16-18' | 'autres' })}
           className="border border-gray-300 p-2 rounded"
           required
         >
-          <option value="7-">7 ans et moins</option>
-          <option value="8-11">8 à 11 ans</option>
-          <option value="12-15">12 à 15 ans</option>
-          <option value="16+">16 ans et plus</option>
+          <option value="6-10">6 à 10 ans</option>
+          <option value="10-16">10 à 16 ans</option>
+          <option value="16-18">16 à 18 ans</option>
+          <option value="autres">Autres</option>
         </select>
         <div></div>
-        <button type="button" onClick={save} className="bg-blue-500 text-white p-2 rounded">
-          Participer
-        </button>
         <div></div>
-        <p>Vos informations seront utilisées pour vous contacter en cas de gain.</p>
+        <div className="flex items-center space-x-6">
+        <label className="inline-flex items-center cursor-pointer">
+          <input
+            ref={checkboxRef}
+            type="checkbox"
+            className="peer hidden"
+            checked={isAccepted}
+            onChange={(e) => setIsAccepted(e.target.checked)}
+          />
+          <div className="w-8 h-8 border-2 border-gray-300 rounded-md peer-checked:bg-g404-violet peer-checked:border-g404-violet"></div>
+        </label>
+        <label htmlFor="consent" className="text-gray-600">J'autorise Garage404 à enregistrer mes données personnelles pour me contacter et m'envoyer des offres promotionnelles.</label>
+        </div>
+        <div></div>
+        <div onClick={() => isFormValid ? save() : null} className={`${isFormValid ? 'opacity-100' : 'opacity-50'} bg-g404-violet text-white rounded-xl text-center p-4 poppins-bold`}>
+          PARTICIPER
+        </div>
+        <div></div>
+        {/* <p>Votre code de réduction vous sera envoyé par mail à la fin de l'évènement.</p> */}
+        <p className="text-sm">
+          Nous collectons vos données pour améliorer notre service, personnaliser vos offres et vous envoyer votre coupon de réduction. La base légale est votre consentement explicite. Responsable de traitement : Garage404. Destinataires : aucune tierce partie. Vos droits (accès, rectification, etc.) peuvent être exercés en contactant notre DPO à contact@garage404.com. Conservation : 2 ans.
+        </p>
       </form>
       <div className={`transform transition-all w-full mt-8 ${selectedInput ? 'translate-y-0' : 'translate-y-96'} ease-in-out`}>
         <Keyboard
@@ -142,18 +187,18 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
           layoutName={layoutName}
           layout={{
             'default': [
-              '` 1 2 3 4 5 6 7 8 9 0 - = {bksp}',
-              '{tab} q w e r t y u i o p [ ] \\',
-              '{lock} a s d f g h j k l ; \' {enter}',
-              '{shift} z x c v b n m , . / {shift}',
+              '' + ' 1 2 3 4 5 6 7 8 9 0 ° + {bksp}',
+              '{tab} a z e r t y u i o p ^ $',
+              '{lock} q s d f g h j k l m ù * {enter}',
+              '{shift} w x c v b n , ; : ! {shift}',
               '.com @ {space}',
               'gmail.com orange.fr free.fr sfr.fr bbox.fr'
             ],
             'shift': [
-              '~ ! @ # $ % ^ &amp; * ( ) _ + {bksp}',
-              '{tab} Q W E R T Y U I O P { } |',
-              '{lock} A S D F G H J K L : " {enter}',
-              '{shift} Z X C V B N M &lt; &gt; ? {shift}',
+              '² & é " \' ( - è _ ç à ) = {bksp}',
+              '{tab} A Z E R T Y U I O P ¨ £',
+              '{lock} Q S D F G H J K L M % µ {enter}',
+              '{shift} W X C V B N ? . / § {shift}',
               '.com @ {space}',
               'gmail.com orange.fr free.fr sfr.fr bbox.fr'
             ]
