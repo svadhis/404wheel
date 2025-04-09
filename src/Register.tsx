@@ -104,6 +104,8 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         email: '',
         age: '6-10'
       })
+      setIsAccepted(false)
+      setError('')
     }
   }, [status])
 
