@@ -177,7 +177,6 @@ const App = () => {
       <div className="pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
         <Result key={result} status={status} discount={result} />
       </div>
-      // button in absolute position to reset the game
       <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" onClick={reset}>
       </div>
     </div>
