@@ -91,7 +91,7 @@ const App = () => {
     if (status === 'result') {
       const timer = setTimeout(() => {
         reset()
-      }, 10000)
+      }, 20000)
 
       return () => clearTimeout(timer)
     }
@@ -174,8 +174,11 @@ const App = () => {
       <div className="pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
         <Register status={status} onReady={getReady} />
       </div>
-      <div className="pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-        <Result key={result} status={status} discount={result} />
+      <div className="flex flex-col space-y-24 items-center pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+        <Result key={result} status={status} discount={result} reset={reset} />
+        <div onClick={reset} className={`${status === 'result' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} bg-g404-violet w-48 text-white rounded-xl text-center p-4 poppins-bold`}>
+          RETOUR
+        </div>
       </div>
       <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" onClick={reset}>
       </div>
