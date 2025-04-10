@@ -45,9 +45,10 @@ const WheelComponent = ({
   const wheelId = useRef(`wheel-${Math.random().toString(36).substring(2)}`)
   const baseCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const stickerCanvasRef = useRef<HTMLCanvasElement | null>(null)
-  const dimension = (size + 20) * 2
-  const centerX = size + 20
-  const centerY = size + 20
+  const [canvasSize, setCanvasSize] = useState(size)
+  const dimension = (canvasSize + 20) * 2
+  const centerX = canvasSize + 20
+  const centerY = canvasSize + 20
 
   const [isFinished, setFinished] = useState(false)
   const [angleCurrent, setAngleCurrent] = useState(0)
@@ -71,21 +72,43 @@ const WheelComponent = ({
     }
   }, [isOffscreenReady])
 
-  useEffect(() => {
+  const createOffscreenCanvas = () => {
     const canvas = document.createElement('canvas')
     canvas.width = dimension
     canvas.height = dimension
-    offscreenCanvasRef.current = canvas
-
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    // 👇 draw wheel segments only once here
-    drawStaticWheel(ctx)
+    drawStaticWheel(ctx) // <- voilà où tu veux ton ctx
+    offscreenCanvasRef.current = canvas
     setOffscreenReady(true)
+  }
 
+
+  useEffect(() => {
+    createOffscreenCanvas()
     drawSticker()
+  }, []) // Appel initial
+
+  useEffect(() => {
+    if (!isOffscreenReady) return
+    createOffscreenCanvas()
+    drawSticker()
+    drawWheel()
+  }, [canvasSize])
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const newSize = window.innerHeight / 2 - 40
+      setCanvasSize(newSize)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
   }, [])
+
 
   const drawStaticWheel = (ctx: CanvasRenderingContext2D) => {
     let lastAngle = 0
