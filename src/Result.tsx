@@ -10,7 +10,7 @@ const Result = ({ status = 'idle', discount }: { status?: GameStatus, discount: 
       <div className="text-g404-bleu text-4xl">
         <span>Vous avez gagné </span>
         <span className="text-g404-violet poppins-black text-4xl">{discount} % de réduction</span>
-        <span> valables sur l'un de nos atelier vacances !</span>
+        <span> valables sur l'un de nos ateliers vacances !</span>
       </div>
       <div className="text-g404-bleu text-3xl">
         <span>Votre coupon vous sera envoyé par mail à la fin de l'événement.</span>
