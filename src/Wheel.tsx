@@ -37,7 +37,7 @@ const WheelComponent = ({
   // upDuration = 100,
   // downDuration = 1000,
   fontFamily = 'proxima-nova',
-  fontSize = '4em',
+  fontSize = '8em',
   status = 'idle',
   onParticipate,
   onStart,
@@ -62,10 +62,53 @@ const WheelComponent = ({
   // const maxSpeed = Math.PI / segments.length
   const PI2 = Math.PI * 2
 
+  const offscreenCanvasRef = useRef<HTMLCanvasElement | null>(null)
+  const [isOffscreenReady, setOffscreenReady] = useState(false)
+
   useEffect(() => {
-    drawWheel()
+    if (isOffscreenReady) {
+      drawWheel(0)
+    }
+  }, [isOffscreenReady])
+
+  useEffect(() => {
+    const canvas = document.createElement('canvas')
+    canvas.width = dimension
+    canvas.height = dimension
+    offscreenCanvasRef.current = canvas
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    // 👇 draw wheel segments only once here
+    drawStaticWheel(ctx)
+    setOffscreenReady(true)
+
     drawSticker()
   }, [])
+
+  const drawStaticWheel = (ctx: CanvasRenderingContext2D) => {
+    let lastAngle = 0
+    ctx.lineWidth = 0
+    ctx.strokeStyle = "#324a6d"
+    ctx.textBaseline = 'middle'
+    ctx.textAlign = 'center'
+    ctx.font = `bold ${fontSize} ${fontFamily}`
+
+    for (let i = 1; i <= segments.length; i++) {
+      const segAngle = PI2 * (i / segments.length)
+      drawSegment(ctx, i - 1, lastAngle, segAngle)
+      lastAngle = segAngle
+    }
+
+    ctx.beginPath()
+    ctx.arc(centerX, centerY, size, 0, PI2)
+    ctx.closePath()
+    ctx.lineWidth = 5
+    ctx.strokeStyle = '#324a6d'
+    ctx.stroke()
+  }
+
 
   // const targetAngleRef = useRef(0)
   const animationFrameRef = useRef<number | null>(null)
@@ -171,34 +214,24 @@ const WheelComponent = ({
 
   const drawWheel = (angle = angleCurrent) => {
     const canvas = baseCanvasRef.current
-    if (!canvas) return
+    const staticCanvas = offscreenCanvasRef.current
+    if (!canvas || !staticCanvas || !isOffscreenReady) return
+
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
     ctx.clearRect(0, 0, dimension, dimension)
 
-    let lastAngle = angle
-    ctx.lineWidth = 0
-    ctx.strokeStyle = "#324a6d"
-    ctx.textBaseline = 'middle'
-    ctx.textAlign = 'center'
-    ctx.font = '1em ' + fontFamily
-
-    for (let i = 1; i <= segments.length; i++) {
-      const segAngle = PI2 * (i / segments.length) + angle
-      drawSegment(ctx, i - 1, lastAngle, segAngle)
-      lastAngle = segAngle
-    }
+    ctx.save()
+    ctx.translate(centerX, centerY)
+    ctx.rotate(angle)
+    ctx.translate(-centerX, -centerY)
+    ctx.drawImage(staticCanvas, 0, 0)
+    ctx.restore()
 
     drawNeedle(ctx, angle)
-
-    ctx.beginPath()
-    ctx.arc(centerX, centerY, size, 0, PI2)
-    ctx.closePath()
-    ctx.lineWidth = 5
-    ctx.strokeStyle = '#324a6d'
-    ctx.stroke()
   }
+
 
   const drawSegment = (ctx: CanvasRenderingContext2D, index: number, start: number, end: number) => {
     ctx.save()
