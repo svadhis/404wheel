@@ -37,7 +37,7 @@ const WheelComponent = ({
   // upDuration = 100,
   // downDuration = 1000,
   fontFamily = 'proxima-nova',
-  fontSize = '8em',
+  fontSize = '6.5em',
   status = 'idle',
   onParticipate,
   onStart,

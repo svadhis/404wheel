@@ -87,6 +87,18 @@ const App = () => {
     setResult(0)
   }
 
+  const refresh = () => {
+    window.location.reload()
+  }
+
+  const fullscreen = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      document.documentElement.requestFullscreen()
+    }
+  }
+
   useEffect(() => {
     if (status === 'result') {
       const timer = setTimeout(() => {
@@ -180,8 +192,8 @@ const App = () => {
           RETOUR
         </div>
       </div>
-      <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" onClick={reset}>
-      </div>
+      <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" onClick={refresh}></div>
+      <div className="absolute top-0 right-0 z-50 w-36 h-36 bg-transparent" onClick={fullscreen}></div>
     </div>
   )
 }
