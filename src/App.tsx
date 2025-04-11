@@ -61,9 +61,8 @@ const App = () => {
   ]
 
   function copyData() {
-    const participants = JSON.parse(localStorage.getItem('participations') || '[]') as Participation[]
-    const text = participants.map((p: Participation) => `${p.name} (${p.email}) - ${p.result} - ${p.date}`).join('\n')
-    navigator.clipboard.writeText(text).then(() => {
+    const participants = localStorage.getItem('participations') || '';
+    navigator.clipboard.writeText(participants).then(() => {
       console.log('Copied to clipboard')
     }, (err) => {
       console.error('Could not copy text: ', err)
