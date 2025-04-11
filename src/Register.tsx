@@ -57,6 +57,12 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
     } else if (button === '{lock}') {
       setCapsLock(!capsLock)
       handleShift()
+    } else if (button === '{space}') {
+      if (selectedInput === 'name') {
+        setForm({ ...form, name: form.name + ' ' })
+      } else if (selectedInput === 'email') {
+        setForm({ ...form, email: form.email + ' ' })
+      }
     } else {
       // Handle other keys
       if (selectedInput === 'name') {
