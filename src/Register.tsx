@@ -8,6 +8,7 @@ import 'react-simple-keyboard/build/css/index.css';
 export type RegisterData = {
   name: string
   email: string
+  phone: string
   age: '6-10' | '10-16' | '16-18' | 'autres'
 }
 
@@ -15,6 +16,7 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
   const [form, setForm] = useState<RegisterData>({
     name: '',
     email: '',
+    phone: '',
     age: '6-10'
   })
 
@@ -50,6 +52,8 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         setForm({ ...form, name: form.name.slice(0, -1) })
       } else if (selectedInput === 'email') {
         setForm({ ...form, email: form.email.slice(0, -1) })
+      } else if (selectedInput === 'phone') {
+        setForm({ ...form, phone: form.phone.slice(0, -1) })
       }
     } else if (button === '{shift}') {
       setCapsLock(false)
@@ -62,6 +66,8 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         setForm({ ...form, name: form.name + ' ' })
       } else if (selectedInput === 'email') {
         setForm({ ...form, email: form.email + ' ' })
+      } else if (selectedInput === 'phone') {
+        setForm({ ...form, phone: form.phone + ' ' })
       }
     } else {
       // Handle other keys
@@ -69,6 +75,8 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         setForm({ ...form, name: form.name + button })
       } else if (selectedInput === 'email') {
         setForm({ ...form, email: form.email + button })
+      } else if (selectedInput === 'phone') {
+        setForm({ ...form, phone: form.phone + button })
       }
     }
 
@@ -87,14 +95,24 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
     return emailRegex.test(email)
   }
 
+  const isValidPhone = (phone: string) => {
+    const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/
+    return phoneRegex.test(phone)
+  }
+
   function save() {
-    if (!form.name || !form.email) {
+    if (!form.name || !form.email || !form.phone) {
       setError('Veuillez remplir tous les champs')
       return
     }
 
     if (!isValidEmail(form.email)) {
       setError('Veuillez entrer un email valide')
+      return
+    }
+
+    if (!isValidPhone(form.phone)) {
+      setError('Veuillez entrer un numéro de téléphone valide')
       return
     }
 
@@ -108,6 +126,7 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
       setForm({
         name: '',
         email: '',
+        phone: '',
         age: '6-10'
       })
       setIsAccepted(false)
@@ -116,7 +135,7 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
   }, [status])
 
   useEffect(() => {
-    if (form.name && isValidEmail(form.email) && isAccepted) {
+    if (form.name && isValidEmail(form.email) && isValidPhone(form.phone) && isAccepted) {
       setIsFormValid(true)
     } else {
       setIsFormValid(false)
@@ -140,16 +159,32 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
           required
         />
         <div></div>
-        <label className="text-xl text-gray-600 ml-2">Votre email</label>
-        <input
-          type="email"
-          // placeholder="Votre email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          onFocus={() => setSelectedInput('email')}
-          className="border border-gray-300 p-2 rounded"
-          required
-        />
+        <div className="flex justify-between space-x-4">
+          <div className="flex flex-col flex-grow space-y-2">
+            <label className="text-xl text-gray-600 ml-2">Votre email</label>
+            <input
+              type="email"
+              // placeholder="Votre email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onFocus={() => setSelectedInput('email')}
+              className="border border-gray-300 p-2 rounded"
+              required
+            />
+          </div>
+          <div className="flex flex-col flex-grow space-y-2">
+            <label className="text-xl text-gray-600 ml-2">Votre numéro de téléphone</label>
+            <input
+              type="tel"
+              // placeholder="Votre numéro de téléphone"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onFocus={() => setSelectedInput('phone')}
+              className="border border-gray-300 p-2 rounded"
+              required
+            />
+          </div>
+        </div>
         <div></div>
         <label className="text-xl text-gray-600 ml-2">L'âge de votre enfant</label>
         <select
