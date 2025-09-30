@@ -246,6 +246,15 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
               'gmail.com orange.fr free.fr sfr.fr bbox.fr'
             ]
           }}
+          numpad: true
+          display={{
+            '{bksp}': '⇦',
+            '{enter}': '⏎',
+            '{shift}': '⇧',
+            '{lock}': '⇪',
+            '{tab}': '↹',
+            '{space}': 'Espace'
+          }}
         />
       </div>
     </div>
