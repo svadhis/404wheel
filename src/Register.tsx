@@ -9,6 +9,7 @@ export type RegisterData = {
   name: string
   email: string
   phone: string
+  cp: string
   age: '6-10' | '10-16' | '16-18' | 'autres'
 }
 
@@ -17,10 +18,16 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
     name: '',
     email: '',
     phone: '',
+    cp: '',
     age: '6-10'
   })
 
-  const [error, setError] = useState<string>('')
+  const [fieldErrors, setFieldErrors] = useState<{
+    name?: string,
+    email?: string,
+    phone?: string,
+    cp?: string
+  }>({})
 
   const [selectedInput, setSelectedInput] = useState<string>('')
 
@@ -54,6 +61,8 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         setForm({ ...form, email: form.email.slice(0, -1) })
       } else if (selectedInput === 'phone') {
         setForm({ ...form, phone: form.phone.slice(0, -1) })
+      } else if (selectedInput === 'cp') {
+        setForm({ ...form, cp: form.cp.slice(0, -1) })
       }
     } else if (button === '{shift}') {
       setCapsLock(false)
@@ -68,6 +77,8 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         setForm({ ...form, email: form.email + ' ' })
       } else if (selectedInput === 'phone') {
         setForm({ ...form, phone: form.phone + ' ' })
+      } else if (selectedInput === 'cp') {
+        setForm({ ...form, cp: form.cp + ' ' })
       }
     } else {
       // Handle other keys
@@ -77,6 +88,8 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         setForm({ ...form, email: form.email + button })
       } else if (selectedInput === 'phone') {
         setForm({ ...form, phone: form.phone + button })
+      } else if (selectedInput === 'cp') {
+        setForm({ ...form, cp: form.cp + button })
       }
     }
 
@@ -100,23 +113,42 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
     return phoneRegex.test(phone)
   }
 
+  const isValidCP = (cp: string) => {
+    if (cp === '75000') return false
+
+    const cpRegex = /^[0-9]{5}$/
+    return cpRegex.test(cp)
+  }
+
   function save() {
-    if (!form.name || !form.email || !form.phone) {
-      setError('Veuillez remplir tous les champs')
-      return
+    const newErrors: typeof fieldErrors = {}
+
+    // if (!form.name || !form.email || !form.phone || !form.cp) {
+    //   setError('Veuillez remplir tous les champs')
+    // }
+
+    if (!form.name) {
+      newErrors.name = 'Veuillez entrer votre nom et prénom'
     }
 
     if (!isValidEmail(form.email)) {
-      setError('Veuillez entrer un email valide')
-      return
+      newErrors.email = 'Veuillez entrer un email valide'
     }
 
     if (!isValidPhone(form.phone)) {
-      setError('Veuillez entrer un numéro de téléphone valide')
+      newErrors.phone = 'Veuillez entrer un numéro de téléphone valide'
+    }
+
+    if (!isValidCP(form.cp)) {
+      newErrors.cp = 'Veuillez entrer un code postal valide'
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors)
       return
     }
 
-    setError('')
+    setFieldErrors({})
     setSelectedInput('')
     onReady(form)
   }
@@ -127,15 +159,16 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         name: '',
         email: '',
         phone: '',
+        cp: '',
         age: '6-10'
       })
       setIsAccepted(false)
-      setError('')
+      setFieldErrors({})
     }
   }, [status])
 
   useEffect(() => {
-    if (form.name && isValidEmail(form.email) && isValidPhone(form.phone) && isAccepted) {
+    if (form.name && isValidEmail(form.email) && isValidPhone(form.phone) && isValidCP(form.cp) && isAccepted) {
       setIsFormValid(true)
     } else {
       setIsFormValid(false)
@@ -146,19 +179,34 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
     <div className={`${status === 'registering' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-all w-256 ease-in-out shadow-2xl flex flex-col items-center justify-center text-xl space-y-4 p-16 bg-white text-g404-bleu border`}>
       <span className="text-3xl poppins-bold">INFORMATIONS</span>
       <div></div>
-      {error && <p className="text-red-500">{error}</p>}
       <form autoComplete="off" className="flex flex-col space-y-4">
-        <label className="text-xl text-gray-600 ml-2">Votre nom et prénom</label>
-        <input
-          type="text"
-          // placeholder="Votre nom et prénom"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          onFocus={() => setSelectedInput('name')}
-          className="border border-gray-300 p-2 rounded"
-          required
-        />
-        <div></div>
+        <div className="flex justify-between space-x-4">
+          <div className="flex flex-col flex-grow space-y-2">
+            <label className="text-xl text-gray-600 ml-2">Votre nom et prénom</label>
+            <input
+              type="text"
+              // placeholder="Votre nom et prénom"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onFocus={() => setSelectedInput('name')}
+              className={`border border-gray-300 p-2 rounded ${fieldErrors.name ? 'border-red-500' : ''}`}
+              required
+            />
+            {fieldErrors.name && <p className="text-red-500 text-sm">{fieldErrors.name}</p>}
+          </div>
+          <div className="flex flex-col flex-grow space-y-2">
+            <label className="text-xl text-gray-600 ml-2">Votre code postal</label>
+            <input
+              type="text"
+              value={form.cp}
+              onChange={(e) => setForm({ ...form, cp: e.target.value })}
+              onFocus={() => setSelectedInput('cp')}
+              className={`border border-gray-300 p-2 rounded ${fieldErrors.cp ? 'border-red-500' : ''}`}
+              required
+            />
+            {fieldErrors.cp && <p className="text-red-500 text-sm">{fieldErrors.cp}</p>}
+          </div>
+        </div>
         <div className="flex justify-between space-x-4">
           <div className="flex flex-col flex-grow space-y-2">
             <label className="text-xl text-gray-600 ml-2">Votre email</label>
@@ -168,9 +216,10 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               onFocus={() => setSelectedInput('email')}
-              className="border border-gray-300 p-2 rounded"
+              className={`border border-gray-300 p-2 rounded ${fieldErrors.email ? 'border-red-500' : ''}`}
               required
             />
+            {fieldErrors.email && <p className="text-red-500 text-sm">{fieldErrors.email}</p>}
           </div>
           <div className="flex flex-col flex-grow space-y-2">
             <label className="text-xl text-gray-600 ml-2">Votre numéro de téléphone</label>
@@ -180,9 +229,10 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               onFocus={() => setSelectedInput('phone')}
-              className="border border-gray-300 p-2 rounded"
+              className={`border border-gray-300 p-2 rounded ${fieldErrors.phone ? 'border-red-500' : ''}`}
               required
             />
+            {fieldErrors.phone && <p className="text-red-500 text-sm">{fieldErrors.phone}</p>}
           </div>
         </div>
         <div></div>
@@ -214,7 +264,7 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
         <label htmlFor="consent" className="text-gray-600">J'autorise Garage404 à enregistrer mes données personnelles pour me contacter et m'envoyer des offres promotionnelles.</label>
         </div>
         <div></div>
-        <div onClick={() => isFormValid ? save() : null} className={`${isFormValid ? 'opacity-100' : 'opacity-50'} bg-g404-violet text-white rounded-xl text-center p-4 poppins-bold`}>
+        <div onClick={() => save()} className={`${isFormValid ? 'opacity-100' : 'opacity-50'} bg-g404-violet text-white rounded-xl text-center p-4 poppins-bold`}>
           PARTICIPER
         </div>
         <div></div>
