@@ -95,7 +95,7 @@ const WheelComponent = ({
     createOffscreenCanvas()
     drawSticker()
     drawWheel()
-  }, [canvasSize])
+  }, [canvasSize, status])
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -305,8 +305,10 @@ const WheelComponent = ({
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    const imgName = status === 'ready' ? 'stickerlancement1' : status === 'playing' ? 'stickerluck' : 'stickerqr'
+
     const img = new Image()
-    img.src = `${import.meta.env.BASE_URL}assets/stickerqr.png`
+    img.src = `${import.meta.env.BASE_URL}assets/${imgName}.png`
     img.onload = () => {
       const imgSize = 300
       ctx.clearRect(0, 0, dimension, dimension)

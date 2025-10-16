@@ -173,18 +173,6 @@ const App = () => {
           onStart={start}
         />
       </div>
-      {/* <QRCode
-        value={last}
-        size={256}
-        style={{
-          margin: "auto",
-          display: "block"
-        }}
-        viewBox={`0 0 256 256`}
-        bgColor="#FFFFFF"
-        fgColor="#000000"
-        level="L"
-      /> */}
       <div className="pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
         <Register status={status} onReady={getReady} />
       </div>
