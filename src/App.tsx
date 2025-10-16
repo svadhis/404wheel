@@ -7,6 +7,7 @@ import Advert from './Advert';
 import Register, { RegisterData } from './Register';
 import { useEffect, useState } from 'react';
 import Result from './Result';
+import { useLongPress } from 'use-long-press';
 // import qr from './assets/qr.png'
 
 type Participation = RegisterData & {
@@ -86,9 +87,9 @@ const App = () => {
     setResult(0)
   }
 
-  const refresh = () => {
-    window.location.reload()
-  }
+  // const refresh = () => {
+  //   window.location.reload()
+  // }
 
   const fullscreen = () => {
     if (document.fullscreenElement) {
@@ -97,6 +98,8 @@ const App = () => {
       document.documentElement.requestFullscreen()
     }
   }
+
+  const handlers = useLongPress(fullscreen, { threshold: 1000 });
 
   useEffect(() => {
     if (status === 'result') {
@@ -191,8 +194,8 @@ const App = () => {
           RETOUR
         </div>
       </div>
-      <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" onClick={refresh}></div>
-      <div className="absolute top-0 right-0 z-50 w-36 h-36 bg-transparent" onClick={fullscreen}></div>
+      {/* <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" onClick={refresh}></div> */}
+      <div className="absolute top-0 right-0 z-50 w-36 h-36 bg-transparent" {...handlers()}></div>
     </div>
   )
 }

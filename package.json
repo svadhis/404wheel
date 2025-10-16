@@ -19,7 +19,8 @@
     "react-qr-code": "^2.0.15",
     "react-simple-keyboard": "^3.8.60",
     "react-wheel-of-prizes": "git+https://github.com/svadhis/react-wheel-of-prizes.git",
-    "tailwindcss": "^4.1.1"
+    "tailwindcss": "^4.1.1",
+    "use-long-press": "^3.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
