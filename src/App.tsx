@@ -99,7 +99,8 @@ const App = () => {
     }
   }
 
-  const handlers = useLongPress(fullscreen, { threshold: 1000 });
+  const leftHandlers = useLongPress(reset, { threshold: 1000 });
+  const rightHandlers = useLongPress(fullscreen, { threshold: 1000 });
 
   useEffect(() => {
     if (status === 'result') {
@@ -113,9 +114,9 @@ const App = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        reset();
-      }
+      // if (event.key === "Backspace") {
+      //   reset();
+      // }
       if (event.key === "F2") {
         copyData();
       }
@@ -182,8 +183,8 @@ const App = () => {
           RETOUR
         </div>
       </div>
-      {/* <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" onClick={refresh}></div> */}
-      <div className="absolute top-0 right-0 z-50 w-36 h-36 bg-transparent" {...handlers()}></div>
+      <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" {...leftHandlers()}></div>
+      <div className="absolute top-0 right-0 z-50 w-36 h-36 bg-transparent" {...rightHandlers()}></div>
     </div>
   )
 }
