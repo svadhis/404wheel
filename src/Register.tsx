@@ -261,7 +261,7 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
           />
           <div className="w-8 h-8 border-2 border-gray-300 rounded-md peer-checked:bg-g404-violet peer-checked:border-g404-violet"></div>
         </label>
-        <label htmlFor="consent" className="text-gray-600">J'autorise Garage404 à enregistrer mes données personnelles pour me contacter et m'envoyer des offres promotionnelles.</label>
+        <label htmlFor="consent" onClick={() => setIsAccepted(!isAccepted)} className="cursor-pointer text-gray-600">J'autorise Garage404 à enregistrer mes données personnelles pour me contacter et m'envoyer des offres promotionnelles.</label>
         </div>
         <div></div>
         <div onClick={() => save()} className={`${isFormValid ? 'opacity-100' : 'opacity-50'} bg-g404-violet text-white rounded-xl text-center p-4 poppins-bold`}>
@@ -283,16 +283,16 @@ const Register = ({ status = 'idle', onReady }: { status?: GameStatus, onReady: 
               '' + ' 1 2 3 4 5 6 7 8 9 0 ° + {bksp}',
               '{tab} a z e r t y u i o p ^ $',
               '{lock} q s d f g h j k l m ù * {enter}',
-              '{shift} w x c v b n , ; : ! {shift}',
-              '.com @ {space}',
+              '{shift} w x c v b n , . .com .fr {shift}',
+              '@ {space}',
               'gmail.com orange.fr free.fr sfr.fr bbox.fr'
             ],
             'shift': [
               '² & é " \' ( - è _ ç à ) = {bksp}',
               '{tab} A Z E R T Y U I O P ¨ £',
               '{lock} Q S D F G H J K L M % µ {enter}',
-              '{shift} W X C V B N ? . / § {shift}',
-              '.com @ {space}',
+              '{shift} W X C V B N ? ; .com .fr {shift}',
+              '@ {space}',
               'gmail.com orange.fr free.fr sfr.fr bbox.fr'
             ]
           }}

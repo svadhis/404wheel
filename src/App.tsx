@@ -7,6 +7,7 @@ import Advert from './Advert';
 import Register, { RegisterData } from './Register';
 import { useEffect, useState } from 'react';
 import Result from './Result';
+import { useLongPress } from 'use-long-press';
 // import qr from './assets/qr.png'
 
 type Participation = RegisterData & {
@@ -86,9 +87,9 @@ const App = () => {
     setResult(0)
   }
 
-  const refresh = () => {
-    window.location.reload()
-  }
+  // const refresh = () => {
+  //   window.location.reload()
+  // }
 
   const fullscreen = () => {
     if (document.fullscreenElement) {
@@ -97,6 +98,9 @@ const App = () => {
       document.documentElement.requestFullscreen()
     }
   }
+
+  const leftHandlers = useLongPress(reset, { threshold: 1000 });
+  const rightHandlers = useLongPress(fullscreen, { threshold: 1000 });
 
   useEffect(() => {
     if (status === 'result') {
@@ -110,9 +114,9 @@ const App = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        reset();
-      }
+      // if (event.key === "Backspace") {
+      //   reset();
+      // }
       if (event.key === "F2") {
         copyData();
       }
@@ -170,18 +174,6 @@ const App = () => {
           onStart={start}
         />
       </div>
-      {/* <QRCode
-        value={last}
-        size={256}
-        style={{
-          margin: "auto",
-          display: "block"
-        }}
-        viewBox={`0 0 256 256`}
-        bgColor="#FFFFFF"
-        fgColor="#000000"
-        level="L"
-      /> */}
       <div className="pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
         <Register status={status} onReady={getReady} />
       </div>
@@ -191,8 +183,8 @@ const App = () => {
           RETOUR
         </div>
       </div>
-      <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" onClick={refresh}></div>
-      <div className="absolute top-0 right-0 z-50 w-36 h-36 bg-transparent" onClick={fullscreen}></div>
+      <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" {...leftHandlers()}></div>
+      <div className="absolute top-0 right-0 z-50 w-36 h-36 bg-transparent" {...rightHandlers()}></div>
     </div>
   )
 }

@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+
 // https://vite.dev/config/
 export default defineConfig({
   base: '/',
@@ -11,7 +12,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt', 'assets/stickerqr.png'],
+      includeAssets: ['favicon.svg', 'robots.txt', 'assets/stickerqr.png', 'assets/stickerlancement1.png', 'assets/stickerluck.png'],
       manifest: {
         name: '404wheel',
         short_name: 'App',
