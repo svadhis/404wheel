@@ -2,13 +2,14 @@ import { useEffect, useState, useRef } from 'react'
 // import sticker from './assets/stickerqr.png'
 import { GameStatus } from './App'
 import { motion } from "motion/react"
+import { DISCOUNT, GOODIE, JACKPOT, Prize } from './constants'
 
 
 export interface WheelComponentProps {
-  segments: string[]
+  segments: Prize[]
   segColors: string[]
-  winningSegment: string
-  onFinished: (segment: string) => void
+  winningSegment: Prize
+  onFinished: (segment: Prize) => void
   primaryColor?: string
   contrastColor?: string
   buttonText?: string
@@ -52,7 +53,7 @@ const WheelComponent = ({
 
   const [isFinished, setFinished] = useState(false)
   const [angleCurrent, setAngleCurrent] = useState(0)
-  const [currentSegment, setCurrentSegment] = useState('')
+  const [currentSegment, setCurrentSegment] = useState<Prize>(GOODIE)
   const isStarted = useRef(false)
   // const timerHandle = useRef(0)
   // const spinStart = useRef(0)
@@ -142,10 +143,10 @@ const WheelComponent = ({
     function getRandomDigit(): number {
       const rand = Math.random();
 
-      if (rand < 0.70) {
+      if (rand < 0.60) {
         const evens = [0, 2, 4, 6, 8];
         return evens[Math.floor(Math.random() * evens.length)];
-      } else if (rand < 0.98) {
+      } else if (rand < 0.99) {
         const odds = [1, 3, 5, 7];
         return odds[Math.floor(Math.random() * odds.length)];
       } else {
@@ -257,23 +258,95 @@ const WheelComponent = ({
 
 
   const drawSegment = (ctx: CanvasRenderingContext2D, index: number, start: number, end: number) => {
-    ctx.save()
-    ctx.beginPath()
-    ctx.moveTo(centerX, centerY)
-    ctx.arc(centerX, centerY, size, start, end, false)
-    ctx.lineTo(centerX, centerY)
-    ctx.closePath()
-    ctx.fillStyle = segColors[index % segColors.length]
-    ctx.fill()
-    ctx.stroke()
+  const value = segments[index]
+  const shadowDepth = 100
+  const segmentText = segments[index]
+  const textRadius = size - shadowDepth / 2
 
-    ctx.translate(centerX, centerY)
-    ctx.rotate((start + end) / 2)
-    ctx.fillStyle = contrastColor
-    ctx.font = `bold ${fontSize} ${fontFamily}`
-    ctx.fillText('       - ' + segments[index].substring(0, 21) + ' %', size / 2 + 20, 0)
-    ctx.restore()
+  // 1. Dessin et remplissage du segment de base.
+  ctx.save()
+  ctx.beginPath()
+  ctx.moveTo(centerX, centerY)
+  ctx.arc(centerX, centerY, size, start, end, false)
+  ctx.lineTo(centerX, centerY)
+  ctx.closePath()
+  ctx.fillStyle = segColors[index % segColors.length]
+  ctx.fill()
+  ctx.stroke()
+
+  // 2. Dessin de la bordure sombre.
+  ctx.beginPath()
+  ctx.arc(centerX, centerY, size, start, end, false)
+  ctx.arc(centerX, centerY, size - shadowDepth, end, start, true)
+  ctx.closePath()
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+  ctx.fill()
+
+  // --- NOUVEAU : Dessin du texte arqué CORRIGÉ ---
+
+  // Définition des propriétés du texte
+  const textSize = value === JACKPOT ? '6.2' : value === DISCOUNT ? '4.8' : '3.2'
+  ctx.fillStyle = contrastColor
+  ctx.font = `bold ${textSize}em ${fontFamily}`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+
+  // 1. Calcul de l'angle total de la chaîne de caractères
+  const metrics = ctx.measureText(segmentText)
+  const textWidth = metrics.width
+
+  // Angle total couvert par le texte (Longueur d'arc = Rayon * Angle)
+  const totalAngle = textWidth / textRadius
+
+  // 2. Calcul de l'angle de départ pour le premier caractère
+  const segmentCenterAngle = (start + end) / 2
+
+  // On commence à l'angle central du segment MOINS la moitié de l'angle total du texte.
+  let currentAngle = segmentCenterAngle - totalAngle / 2
+
+  // Sauvegarde et translation au centre de la roue
+  ctx.save()
+  ctx.translate(centerX, centerY)
+
+  // Pour chaque lettre, on va dessiner et avancer.
+  for (let i = 0; i < segmentText.length; i++) {
+    const char = segmentText[i]
+
+    // Mesure de la largeur de la lettre (pour avancer l'angle)
+    const charMetrics = ctx.measureText(char)
+    const charWidth = charMetrics.width
+
+    // On avance l'angle de la moitié de la largeur de la lettre courante
+    // pour que la rotation suivante soit centrée sur cette lettre.
+    currentAngle += (charWidth / 2) / textRadius
+
+    // --- APPLICATION DE LA ROTATION ---
+
+    // 1. On effectue une rotation pour aligner le texte perpendiculairement au rayon (90° ou Math.PI / 2)
+    // L'angle de rotation total est la position de la lettre sur l'arc + l'offset de 90°.
+    const rotationAngle = currentAngle + Math.PI / 2
+
+    // On pivote l'ensemble du contexte
+    ctx.rotate(rotationAngle)
+
+    // 2. Dessin de la lettre à la bonne distance (textRadius)
+    // On dessine en Y négatif car l'axe Y va vers le bas par défaut
+    ctx.fillText(char, 0, -textRadius)
+
+    // 3. Contre-rotation : on pivote en sens inverse pour la prochaine lettre
+    // On remet le contexte de rotation à zéro pour que les rotations ne s'accumulent pas.
+    ctx.rotate(-rotationAngle)
+
+    // Avancer l'angle de la moitié restante de la largeur de la lettre.
+    currentAngle += (charWidth / 2) / textRadius
   }
+
+  ctx.restore() // Restauration du contexte après le dessin du texte
+
+  // Note: Si vous souhaitez conserver l'icône, remettez le code pour la dessiner ici.
+  // ctx.font = `bold ${fontSize} ${fontFamily}`
+  // ctx.fillText('\uf004', 0, 0)
+}
 
   const drawNeedle = (ctx: CanvasRenderingContext2D, angle: number) => {
     ctx.lineWidth = 1

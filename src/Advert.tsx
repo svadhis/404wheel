@@ -62,10 +62,10 @@ const Advert = ({ status = 'idle', onParticipate }: { status?: GameStatus, onPar
         <img src={logo} alt="" className="w-164" />
       </div>
       <div className="text-g404-bleu text-4xl flex flex-col space-y-2">
-        <span>Obtiens ta réduction</span>
-        <span className="text-g404-violet poppins-black text-5xl">exclusive</span>
-        <span>pour un atelier découverte</span>
-        <span>pendant les vacances !</span>
+        <span>Tente ta chance pour gagner</span>
+        <span className="text-g404-violet poppins-black text-5xl">un parcours éducatif</span>
+        <span>complet d’un an</span>
+        <span className="text-g404-violet poppins-black text-6xl">100% GRATUIT</span>
       </div>
       { status === 'ready' || status === "playing" || status === "result" ? (
         <div className="text-g404-bleu text-4xl">
@@ -73,7 +73,7 @@ const Advert = ({ status = 'idle', onParticipate }: { status?: GameStatus, onPar
         </div>
       ) : (
         <div
-          className="participate cursor-pointer bg-g404-violet text-white text-3xl w-42 h-42 flex justify-center items-center rounded-full"
+          className="participate cursor-pointer bg-g404-violet border-4 border-g404-bleu text-white text-3xl w-42 h-42 flex justify-center items-center rounded-full"
           onClick={status === 'idle' ? onParticipate : undefined}
         >
           JOUER

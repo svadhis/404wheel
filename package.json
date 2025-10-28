@@ -17,6 +17,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-qr-code": "^2.0.15",
+    "react-router-dom": "^7.9.4",
     "react-simple-keyboard": "^3.8.60",
     "react-wheel-of-prizes": "git+https://github.com/svadhis/react-wheel-of-prizes.git",
     "tailwindcss": "^4.1.1",
