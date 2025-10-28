@@ -1,5 +1,3 @@
-import { copyData } from "./utils";
-
 export default function Control() {
   // Récupérer et parser les données depuis localStorage
   const participations = JSON.parse(localStorage.getItem("participations") || "[]");
