@@ -8,6 +8,8 @@ import Register, { RegisterData } from './Register';
 import { useEffect, useState } from 'react';
 import Result from './Result';
 import { useLongPress } from 'use-long-press';
+import { DISCOUNT, GOODIE, JACKPOT, Prize } from './constants';
+import { copyData } from './utils';
 // import qr from './assets/qr.png'
 
 type Participation = RegisterData & {
@@ -21,7 +23,8 @@ const App = () => {
   // const [last, setLast] = useState('')
   const [participation, setParticipation] = useState<Participation | null>(null)
   const [status, setStatus] = useState<GameStatus>('idle')
-  const [result, setResult] = useState<number>(0)
+  const [result, setResult] = useState<Prize>(GOODIE)
+  const [code, setCode] = useState('')
 
   function participate() {
     setStatus('registering')
@@ -36,17 +39,17 @@ const App = () => {
     setStatus('playing')
   }
 
-  const segments = [
-    '20',
-    '50',
-    '20',
-    '50',
-    '20',
-    '50',
-    '20',
-    '50',
-    '20',
-    '100',
+  const segments: Prize[] = [
+    DISCOUNT,
+    GOODIE,
+    DISCOUNT,
+    GOODIE,
+    DISCOUNT,
+    GOODIE,
+    DISCOUNT,
+    GOODIE,
+    DISCOUNT,
+    JACKPOT,
   ]
   const segColors = [
     '#8041ba',
@@ -61,19 +64,10 @@ const App = () => {
     '#d3af37',
   ]
 
-  function copyData() {
-    const participants = localStorage.getItem('participations') || '';
-    navigator.clipboard.writeText(participants).then(() => {
-      console.log('Copied to clipboard')
-    }, (err) => {
-      console.error('Could not copy text: ', err)
-    })
-  }
-
-  const onFinished = (winner: string) => {
+  const onFinished = (winner: Prize) => {
     const form = { ...participation!, result: winner, date: new Date().toLocaleString() }
     setParticipation(form)
-    setResult(parseInt(winner))
+    setResult(winner)
     setStatus('result')
 
     const participants = JSON.parse(localStorage.getItem('participations') || '[]') as Participation[]
@@ -84,7 +78,7 @@ const App = () => {
 
   const reset = () => {
     setStatus('idle')
-    setResult(0)
+    setResult(GOODIE)
   }
 
   // const refresh = () => {
@@ -102,6 +96,54 @@ const App = () => {
   const leftHandlers = useLongPress(reset, { threshold: 1000 });
   const rightHandlers = useLongPress(fullscreen, { threshold: 1000 });
 
+  function generateCode() {
+    const raw = localStorage.getItem("participations");
+    if (!raw) return "";
+
+    const participations = JSON.parse(raw);
+    if (!Array.isArray(participations) || participations.length === 0) return "";
+
+    // Normaliser les noms de résultats
+    const mapResultToLetter = (result: Prize) => {
+      switch (result) {
+        case JACKPOT:
+          return "A";
+        case DISCOUNT:
+          return "B";
+        case GOODIE:
+          return "C";
+        default:
+          return "?";
+      }
+    };
+
+    // Obtenir les 3 dernières participations
+    const lastThree = participations.slice(-3);
+
+    // Pour compter le nombre de fois qu’un prix a été gagné jusqu’à ce moment
+    const countOccurrencesBefore = (result: Prize, index: number) => {
+      return participations.slice(0, index + 1).filter(p => p.result === result).length;
+    };
+
+    // Génération des 3 codes
+    const codes = lastThree.map((p) => {
+      const index = participations.indexOf(p) + 1; // position globale (1-based)
+      const initials = p.name
+        ? p.name
+            .split(" ")
+            .map((word: string) => word[0]?.toUpperCase() || "")
+            .join("")
+        : "??";
+
+      const resultCount = countOccurrencesBefore(p.result, participations.indexOf(p));
+      const letter = mapResultToLetter(p.result);
+
+      return `${index}${initials}${resultCount}${letter}`;
+    });
+
+    return codes.join("-");
+  }
+
   useEffect(() => {
     if (status === 'result') {
       const timer = setTimeout(() => {
@@ -110,6 +152,10 @@ const App = () => {
 
       return () => clearTimeout(timer)
     }
+
+    // generate code
+    const generatedCode = generateCode();
+    setCode(generatedCode);
   }, [status])
 
   useEffect(() => {
@@ -160,8 +206,8 @@ const App = () => {
           status={status}
           segments={segments}
           segColors={segColors}
-          winningSegment='won 10'
-          onFinished={(winner: string) => onFinished(winner)}
+          winningSegment={GOODIE}
+          onFinished={(winner: Prize) => onFinished(winner)}
           primaryColor='black'
           contrastColor='white'
           buttonText='Spin'
@@ -178,13 +224,14 @@ const App = () => {
         <Register status={status} onReady={getReady} />
       </div>
       <div className="flex flex-col space-y-24 items-center pointer-events-none absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-        <Result key={result} status={status} discount={result} />
+        <Result key={result} status={status} prize={result} />
         <div onClick={reset} className={`${status === 'result' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} bg-g404-violet w-48 text-white rounded-xl text-center p-4 poppins-bold`}>
           RETOUR
         </div>
       </div>
       <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" {...leftHandlers()}></div>
       <div className="absolute top-0 right-0 z-50 w-36 h-36 bg-transparent" {...rightHandlers()}></div>
+      <div className="absolute bottom-1 right-2 text-right text-black">{ code }</div>
     </div>
   )
 }
