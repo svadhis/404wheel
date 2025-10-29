@@ -14,7 +14,7 @@ const Result = ({ status = 'idle', prize }: { status?: GameStatus, prize: Prize 
     [DISCOUNT]: (
       <div className="text-g404-bleu text-4xl">
         <span>Vous avez gagné </span>
-        <span className="text-g404-violet poppins-black text-4xl">30 % de réduction</span>
+        <span className="text-g404-violet poppins-black text-4xl">20 % de réduction</span>
         <span> valables sur l'un de nos parcours éducatifs annuels</span>
       </div>
     ),
