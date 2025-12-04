@@ -143,14 +143,14 @@ const WheelComponent = ({
     function getRandomDigit(): number {
       const rand = Math.random();
 
-      if (rand < 0.60) {
-        const evens = [0, 2, 4, 6, 8];
+      if (rand < 0.30) { // 30% de chances
+        const evens = [0, 2, 4, 6, 8]; // Discount
         return evens[Math.floor(Math.random() * evens.length)];
-      } else if (rand < 0.99) {
-        const odds = [1, 3, 5, 7];
+      } else if (rand < 0.99) {  // 69% de chances
+        const odds = [1, 3, 5, 7]; // Goodie
         return odds[Math.floor(Math.random() * odds.length)];
-      } else {
-        return 9;
+      } else { // 1% de chances
+        return 9; // Jackpot
       }
     }
 
