@@ -1,6 +1,9 @@
 // import WheelComponent from 'react-wheel-of-prizes'
 // import 'react-wheel-of-prizes/dist/index.css'
 import WheelComponent from './Wheel'
+
+declare const __APP_VERSION__: string;
+
 // import QRCode from "react-qr-code";
 import './App.css'
 import Advert from './Advert';
@@ -231,6 +234,7 @@ const App = () => {
       </div>
       <div className="absolute top-0 left-0 z-50 w-36 h-36 bg-transparent" {...leftHandlers()}></div>
       <div className="absolute top-0 right-0 z-50 w-36 h-36 bg-transparent" {...rightHandlers()}></div>
+      <div className="absolute bottom-1 left-2 text-right text-black">{ __APP_VERSION__ }</div>
       <div className="absolute bottom-1 right-2 text-right text-black">{ code }</div>
     </div>
   )
