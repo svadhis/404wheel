@@ -1,5 +1,5 @@
 import { GameStatus } from "./App"
-import { DISCOUNT, GOODIE, JACKPOT, Prize } from "./constants"
+import { LOW_DISCOUNT, HIGH_DISCOUNT, GOODIE, JACKPOT, Prize } from "./constants"
 
 const Result = ({ status = 'idle', prize }: { status?: GameStatus, prize: Prize }) => {
   const winSection = {
@@ -7,15 +7,22 @@ const Result = ({ status = 'idle', prize }: { status?: GameStatus, prize: Prize 
       <div className="text-g404-bleu text-4xl">
         <div>
           <span>Vous avez gagné </span>
-          <span className="text-g404-violet poppins-black text-4xl">un parcours éducatif complet d'un an GRATUIT !</span>
+          <span className="text-g404-violet poppins-black text-4xl">un atelier découverte de votre choix GRATUIT !</span>
         </div>
       </div>
     ),
-    [DISCOUNT]: (
+    [LOW_DISCOUNT]: (
       <div className="text-g404-bleu text-4xl">
         <span>Vous avez gagné </span>
-        <span className="text-g404-violet poppins-black text-4xl">20 % de réduction</span>
-        <span> valables sur l'un de nos parcours éducatifs annuels</span>
+        <span className="text-g404-violet poppins-black text-4xl">25 % de réduction</span>
+        <span> valables sur l'un de nos ateliers découverte</span>
+      </div>
+    ),
+    [HIGH_DISCOUNT]: (
+      <div className="text-g404-bleu text-4xl">
+        <span>Vous avez gagné </span>
+        <span className="text-g404-violet poppins-black text-4xl">50 % de réduction</span>
+        <span> valables sur l'un de nos ateliers découverte</span>
       </div>
     ),
     [GOODIE]: (

@@ -63,8 +63,8 @@ const Advert = ({ status = 'idle', onParticipate }: { status?: GameStatus, onPar
       </div>
       <div className="text-g404-bleu text-4xl flex flex-col space-y-2">
         <span>Tente ta chance pour gagner</span>
-        <span className="text-g404-violet poppins-black text-5xl">un parcours éducatif</span>
-        <span>complet d’un an</span>
+        <span className="text-g404-violet poppins-black text-5xl">un atelier découverte</span>
+        <span>de ton choix</span>
         <span className="text-g404-violet poppins-black text-6xl">100% GRATUIT</span>
       </div>
       { status === 'ready' || status === "playing" || status === "result" ? (

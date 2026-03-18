@@ -11,7 +11,7 @@ import Register, { RegisterData } from './Register';
 import { useEffect, useState } from 'react';
 import Result from './Result';
 import { useLongPress } from 'use-long-press';
-import { DISCOUNT, GOODIE, JACKPOT, Prize } from './constants';
+import { LOW_DISCOUNT, HIGH_DISCOUNT, GOODIE, JACKPOT, Prize } from './constants';
 import { copyData } from './utils';
 // import qr from './assets/qr.png'
 
@@ -43,15 +43,15 @@ const App = () => {
   }
 
   const segments: Prize[] = [
-    DISCOUNT,
+    LOW_DISCOUNT,
     GOODIE,
-    DISCOUNT,
+    HIGH_DISCOUNT,
     GOODIE,
-    DISCOUNT,
+    LOW_DISCOUNT,
     GOODIE,
-    DISCOUNT,
+    HIGH_DISCOUNT,
     GOODIE,
-    DISCOUNT,
+    LOW_DISCOUNT,
     JACKPOT,
   ]
   const segColors = [
@@ -111,8 +111,10 @@ const App = () => {
       switch (result) {
         case JACKPOT:
           return "A";
-        case DISCOUNT:
-          return "B";
+        case LOW_DISCOUNT:
+          return "B-";
+        case HIGH_DISCOUNT:
+          return "B+";
         case GOODIE:
           return "C";
         default:
@@ -144,7 +146,7 @@ const App = () => {
       return `${index}${initials}${resultCount}${letter}`;
     });
 
-    return codes.join("-");
+    return codes.join(" ");
   }
 
   useEffect(() => {

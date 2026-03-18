@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 // import sticker from './assets/stickerqr.png'
 import { GameStatus } from './App'
 import { motion } from "motion/react"
-import { DISCOUNT, GOODIE, JACKPOT, Prize } from './constants'
+import { LOW_DISCOUNT, HIGH_DISCOUNT, GOODIE, JACKPOT, Prize } from './constants'
 
 
 export interface WheelComponentProps {
@@ -142,16 +142,19 @@ const WheelComponent = ({
 
     function getRandomDigit(): number {
       const rand = Math.random();
+      let segments: number[];
 
-      if (rand < 0.30) { // 30% de chances
-        const evens = [0, 2, 4, 6, 8]; // Discount
-        return evens[Math.floor(Math.random() * evens.length)];
-      } else if (rand < 0.99) {  // 69% de chances
-        const odds = [1, 3, 5, 7]; // Goodie
-        return odds[Math.floor(Math.random() * odds.length)];
-      } else { // 1% de chances
-        return 9; // Jackpot
+      if (rand < 0.01) return 9; // Jackpot (1%)
+
+      if (rand < 0.11) { // High Discount (10%)
+        segments = [2, 6];
+      } else if (rand < 0.31) { // Low Discount (20%)
+        segments = [0, 4, 8];
+      } else { // Goodies (69%)
+        segments = [1, 3, 5, 7];
       }
+
+      return segments[Math.floor(Math.random() * segments.length)];
     }
 
     const targetIndex = getRandomDigit()
@@ -285,7 +288,7 @@ const WheelComponent = ({
   // --- NOUVEAU : Dessin du texte arqué CORRIGÉ ---
 
   // Définition des propriétés du texte
-  const textSize = value === JACKPOT ? '6.2' : value === DISCOUNT ? '4.8' : '3.2'
+  const textSize = value === JACKPOT ? '6.2' : value === HIGH_DISCOUNT ? '5.0' : value === LOW_DISCOUNT ? '4.2' : '3.2'
   ctx.fillStyle = contrastColor
   ctx.font = `bold ${textSize}em ${fontFamily}`
   ctx.textAlign = 'center'
